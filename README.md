@@ -5,13 +5,13 @@ Alert: is not meant to play with it. It's just a template to help understand the
 
 How to get it work(it only requires the arcade python module)
 ```bash
-  pip3 install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 How to Play
 ```bash
-  git clone https://github.com/Sha-256-HashTable/Space-Invaders-python-arcade.git
-  cd Space-Invaders-python-arcade
-  python3 spaceinvaders.py
+git clone https://github.com/Sha-256-HashTable/Space-Invaders-python-arcade.git
+cd Space-Invaders-python-arcade
+python3 spaceinvaders.py
 ```
 Screenshots
 
