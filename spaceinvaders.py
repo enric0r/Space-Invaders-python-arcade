@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 '''
 	Name: Space Invaders
-	Module: arcade
+	Module: PyArcade
 '''
 import arcade, os, sys, random, time
 
@@ -18,6 +18,7 @@ CLOCK_TIME = 30
 GAME_RUNNING = 1
 GAME_OVER = 2
 GAME_WIN = 3
+INSTRUCTION_PAGE = 0
 
 class MyGame(arcade.Window):
 	def __init__(self, width, height, title):
@@ -36,7 +37,7 @@ class MyGame(arcade.Window):
 		self.enemy_sprite = None
 
 		#Set of current state and score
-		self.current_state = GAME_RUNNING
+		self.current_state = INSTRUCTION_PAGE
 		self.score = 0	
 
 		#Movement variables
@@ -46,6 +47,10 @@ class MyGame(arcade.Window):
 		self.up_pressed = False	
 
 		arcade.set_background_color(arcade.color.BLACK)
+		
+		self.instructions = []
+		texture = arcade.load_texture("sprites/instructions.png")
+		self.instructions.append(texture)
 
 	def setup(self):
 		#Declarations of Sprite lists
@@ -80,6 +85,11 @@ class MyGame(arcade.Window):
 	
 		self.background = arcade.load_texture("sprites/background.jpg")
 
+	def draw_instructions(self,page_number):
+		page_texture = self.instructions[page_number]
+		arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, page_texture.width, page_texture.height, page_texture, 0)
+		
+
 	def draw_game_win(self):
 		output = "YOU WON"
 		arcade.draw_text(output, 200, SCREEN_HEIGHT / 2, arcade.color.GREEN, 50)
@@ -113,7 +123,9 @@ class MyGame(arcade.Window):
 		arcade.start_render()
 		arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, SCREEN_WIDTH, SCREEN_HEIGHT, self.background)
 
-		if self.current_state == GAME_RUNNING:
+		if self.current_state == INSTRUCTION_PAGE:
+			self.draw_instructions(0)
+		elif self.current_state == GAME_RUNNING:
 			self.draw_game()
 		elif self.current_state == GAME_OVER:
 			self.draw_game_over()
@@ -178,7 +190,10 @@ class MyGame(arcade.Window):
 				self.current_state == GAME_WIN
 
 	def on_key_press(self, key, modifiers):
-		if self.current_state == GAME_RUNNING:
+		if self.current_state == INSTRUCTION_PAGE:
+			if key == arcade.key.SPACE:
+				self.current_state = GAME_RUNNING
+		elif self.current_state == GAME_RUNNING:
 			if key == arcade.key.UP or key == arcade.key.W:
 				self.up_pressed = True
 			elif key == arcade.key.DOWN or key == arcade.key.S:
