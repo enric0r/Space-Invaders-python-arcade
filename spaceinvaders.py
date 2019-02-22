@@ -38,6 +38,7 @@ class MyGame(arcade.Window):
 
 		#Fps counter 
 		self.fps = FPSCounter()
+		self.fps_counter_state = False
 
 		#Set of current state and score
 		self.current_state = INSTRUCTION_PAGE
@@ -76,7 +77,7 @@ class MyGame(arcade.Window):
 		Y_SPACING = 0
 
 		#Enemy Spawn
-		for col in range(3):
+		for col in range(1):
 			for row in range(16):
 				self.enemy_sprite = Enemy("sprites/enemy1_1.png", ENEMY_SCALING)
 				self.enemy_sprite.center_x = 25 + X_SPACING
@@ -132,11 +133,13 @@ class MyGame(arcade.Window):
 		arcade.start_render()
 		arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, SCREEN_WIDTH, SCREEN_HEIGHT, self.background)
 
+		if self.fps_counter_state == True:
+			self.draw_fps()
+
 		if self.current_state == INSTRUCTION_PAGE:
 			self.draw_instructions(0)
 		elif self.current_state == GAME_RUNNING:
 			self.draw_game()
-			self.draw_fps()
 		elif self.current_state == GAME_OVER:
 			self.draw_game_over()
 		elif self.current_state == GAME_WIN:
@@ -200,9 +203,12 @@ class MyGame(arcade.Window):
 				self.current_state = GAME_OVER
 
 			if len(self.enemy_list) == 0:
-				self.current_state == GAME_WIN
+				self.current_state = GAME_WIN
 
 	def on_key_press(self, key, modifiers):
+		if key == arcade.key.F10:
+			self.fps_counter_state = (not self.fps_counter_state)
+	
 		if key == arcade.key.F11:
 			self.set_fullscreen(not self.fullscreen)
 			self.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
@@ -264,7 +270,7 @@ class Enemy(arcade.Sprite):
 		self.center_x += self.change_x
 		self.center_y += self.change_y 
 
-		self.center_y -= 1
+		self.center_y -= 0.4
 
 		if self.left < 0:
 			self.left = 0
