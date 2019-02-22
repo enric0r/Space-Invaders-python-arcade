@@ -77,7 +77,7 @@ class MyGame(arcade.Window):
 		Y_SPACING = 0
 
 		#Enemy Spawn
-		for col in range(1):
+		for col in range(2):
 			for row in range(16):
 				self.enemy_sprite = Enemy("sprites/enemy1_1.png", ENEMY_SCALING)
 				self.enemy_sprite.center_x = 25 + X_SPACING
