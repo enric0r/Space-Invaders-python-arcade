@@ -1,7 +1,7 @@
 # Space-Invaders-python-arcade
 Very rough space invaders-like clone, written in python with arcade module
 
-Warning: is not meant to play with it. It's just a template to help understand the arcade module
+Alert: is not meant to play with it. It's just a template to help understand the arcade module
 
 How to get it work(it only requires the arcade python module)
 ```bash
