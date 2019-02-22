@@ -17,6 +17,7 @@ BULLET_SPEED = 5
 CLOCK_TIME = 30
 GAME_RUNNING = 1
 GAME_OVER = 2
+GAME_WIN = 3
 
 class MyGame(arcade.Window):
 	def __init__(self, width, height, title):
@@ -116,6 +117,8 @@ class MyGame(arcade.Window):
 			self.draw_game()
 		elif self.current_state == GAME_OVER:
 			self.draw_game_over()
+		elif self.current_state == GAME_WIN:
+			self.draw_game_win()
 	
 	def update(self, delta_time):
 		if self.current_state == GAME_RUNNING:
@@ -170,6 +173,9 @@ class MyGame(arcade.Window):
 
 			if self.enemy_sprite.center_y < 50:
 				self.current_state = GAME_OVER
+
+			if len(self.enemy_list) == 0:
+				self.current_state == GAME_WIN
 
 	def on_key_press(self, key, modifiers):
 		if self.current_state == GAME_RUNNING:
