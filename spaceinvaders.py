@@ -231,7 +231,7 @@ class MyGame(arcade.Window):
 				bullet.center_x = self.player_sprite.center_x
 				bullet.bottom = self.player_sprite.top
 				self.bullet_list.append(bullet)
-		if self.current_state == GAME_OVER:
+		if self.current_state == GAME_OVER or self.current_state == GAME_WIN:
 			if key == arcade.key.R:
 				self.setup()
 				self.current_state = GAME_RUNNING
