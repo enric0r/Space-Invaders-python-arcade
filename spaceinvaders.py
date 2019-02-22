@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 '''
 	Name: Space Invaders
-	Module: PyArcade
+	Module: arcade
 '''
 import arcade, os, sys, random, time
 
