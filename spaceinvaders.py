@@ -3,7 +3,7 @@
 	Name: Space Invaders
 	Module: PyArcade
 '''
-import arcade, os, sys, random, time
+import arcade, os, sys, random, time, timeit, collections
 
 #Constants
 SCREEN_WIDTH = 800
@@ -35,6 +35,9 @@ class MyGame(arcade.Window):
 		self.background = None
 		self.player_sprite = None
 		self.enemy_sprite = None
+
+		#Fps counter 
+		self.fps = FPSCounter()
 
 		#Set of current state and score
 		self.current_state = INSTRUCTION_PAGE
@@ -87,8 +90,7 @@ class MyGame(arcade.Window):
 
 	def draw_instructions(self,page_number):
 		page_texture = self.instructions[page_number]
-		arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, page_texture.width, page_texture.height, page_texture, 0)
-		
+		arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, page_texture.width, page_texture.height, page_texture, 0)	
 
 	def draw_game_win(self):
 		output = "YOU WON"
@@ -119,7 +121,14 @@ class MyGame(arcade.Window):
 		output = f"Score: {self.score}"
 		arcade.draw_text(output, 10 , 20, arcade.color.WHITE, 14)
 
+	def draw_fps(self):
+		fps = self.fps.get_fps()
+		output = f"FPS:{fps:3.0f}"
+		arcade.draw_text(output, 10, 10, arcade.color.WHITE, 7)
+
 	def on_draw(self):
+		draw_start_timer = timeit.default_timer()
+
 		arcade.start_render()
 		arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, SCREEN_WIDTH, SCREEN_HEIGHT, self.background)
 
@@ -127,10 +136,14 @@ class MyGame(arcade.Window):
 			self.draw_instructions(0)
 		elif self.current_state == GAME_RUNNING:
 			self.draw_game()
+			self.draw_fps()
 		elif self.current_state == GAME_OVER:
 			self.draw_game_over()
 		elif self.current_state == GAME_WIN:
 			self.draw_game_win()
+
+		self.draw_time = timeit.default_timer() - draw_start_timer
+		self.fps.tick()
 	
 	def update(self, delta_time):
 		if self.current_state == GAME_RUNNING:
@@ -250,7 +263,7 @@ class Enemy(arcade.Sprite):
 	def update(self):
 		self.center_x += self.change_x
 		self.center_y += self.change_y 
-	
+
 		self.center_y -= 1
 
 		if self.left < 0:
@@ -262,6 +275,24 @@ class Enemy(arcade.Sprite):
 			self.bottom = 0
 		elif self.top > SCREEN_HEIGHT - 1:
 			self.top = SCREEN_HEIGHT - 1
+
+class FPSCounter:
+	def __init__(self):
+		self.time = time.perf_counter()
+		self.frame_times = collections.deque(maxlen=60)
+
+	def tick(self):
+		t1 = time.perf_counter()
+		dt = t1 - self.time
+		self.time = t1
+		self.frame_times.append(dt)
+
+	def get_fps(self):
+		total_time = sum(self.frame_times)
+		if total_time == 0:
+			return 0
+		else:
+			return len(self.frame_times) / sum(self.frame_times)
 
 def main():
 	game = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
