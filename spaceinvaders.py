@@ -23,7 +23,7 @@ INSTRUCTION_PAGE = 0
 class MyGame(arcade.Window):
 	def __init__(self, width, height, title):
 		#Standard declarations and working folder
-		super().__init__(width, height, title)
+		super().__init__(width, height, title, fullscreen=False)
 		file_path = os.path.dirname(os.path.abspath(__file__))
 		os.chdir(file_path)
 		
@@ -190,6 +190,10 @@ class MyGame(arcade.Window):
 				self.current_state == GAME_WIN
 
 	def on_key_press(self, key, modifiers):
+		if key == arcade.key.F11:
+			self.set_fullscreen(not self.fullscreen)
+			self.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
+
 		if self.current_state == INSTRUCTION_PAGE:
 			if key == arcade.key.SPACE:
 				self.current_state = GAME_RUNNING
