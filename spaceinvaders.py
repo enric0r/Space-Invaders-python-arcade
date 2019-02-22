@@ -5,19 +5,22 @@
 '''
 import arcade, os, sys, random, time, timeit, collections
 
-#Constants
+#Window properties
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Space Invaders"
+#Sprite scaling
 PLAYER_SCALING = 0.7
 BULLET_SCALING = 1
 ENEMY_SCALING = 0.3
+#Physics and movement
 MOVEMENT_SPEED = 3.5
 BULLET_SPEED = 5
-CLOCK_TIME = 30
+#Game status
 GAME_RUNNING = 1
 GAME_OVER = 2
 GAME_WIN = 3
+#Instruction page
 INSTRUCTION_PAGE = 0
 
 class MyGame(arcade.Window):
@@ -49,8 +52,6 @@ class MyGame(arcade.Window):
 		self.right_pressed = False
 		self.down_pressed = False
 		self.up_pressed = False	
-
-		arcade.set_background_color(arcade.color.BLACK)
 		
 		self.instructions = []
 		texture = arcade.load_texture("sprites/instructions.png")
@@ -78,22 +79,25 @@ class MyGame(arcade.Window):
 
 		#Enemy Spawn
 		for col in range(2):
-			for row in range(16):
+			for row in range(14):
 				self.enemy_sprite = Enemy("sprites/enemy1_1.png", ENEMY_SCALING)
-				self.enemy_sprite.center_x = 25 + X_SPACING
+				self.enemy_sprite.center_x = 70 + X_SPACING
 				self.enemy_sprite.center_y = 570 - Y_SPACING
 				self.enemy_list.append(self.enemy_sprite)
 				X_SPACING += 50
 			Y_SPACING += 50
 			X_SPACING = 0
-	
+
+		#Loads the background
 		self.background = arcade.load_texture("sprites/background.jpg")
 
 	def draw_instructions(self,page_number):
+		#Draws instructions
 		page_texture = self.instructions[page_number]
 		arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, page_texture.width, page_texture.height, page_texture, 0)	
 
 	def draw_game_win(self):
+		#Draws game win screen
 		output = "YOU WON"
 		arcade.draw_text(output, 200, SCREEN_HEIGHT / 2, arcade.color.GREEN, 50)
 		
@@ -104,6 +108,7 @@ class MyGame(arcade.Window):
 		arcade.draw_text(output, 200, (SCREEN_HEIGHT /2 )- 70, arcade.color.WHITE, 18)
 
 	def draw_game_over(self):
+		#Draws game over screen
 		output = "GAME OVER"
 		arcade.draw_text(output, 200, SCREEN_HEIGHT / 2, arcade.color.RED, 50)
 		
@@ -114,6 +119,7 @@ class MyGame(arcade.Window):
 		arcade.draw_text(output, 200, (SCREEN_HEIGHT /2 )- 70, arcade.color.WHITE, 18)
 
 	def draw_game(self):
+		#Draws the game
 		self.player_list.draw()
 		self.enemy_list.draw()
 		self.bullet_list.draw()
@@ -123,19 +129,25 @@ class MyGame(arcade.Window):
 		arcade.draw_text(output, 10 , 20, arcade.color.WHITE, 14)
 
 	def draw_fps(self):
+		#Draws FPS on the screen
 		fps = self.fps.get_fps()
 		output = f"FPS:{fps:3.0f}"
 		arcade.draw_text(output, 10, 10, arcade.color.WHITE, 7)
 
 	def on_draw(self):
+		#Starts a timer
 		draw_start_timer = timeit.default_timer()
 
 		arcade.start_render()
-		arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, SCREEN_WIDTH, SCREEN_HEIGHT, self.background)
 
+		#Draws the background
+		arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, SCREEN_WIDTH, SCREEN_HEIGHT, self.background)
+		
+		#If the FPS toggle is on call the function
 		if self.fps_counter_state == True:
 			self.draw_fps()
 
+		#Draw the game state layouts
 		if self.current_state == INSTRUCTION_PAGE:
 			self.draw_instructions(0)
 		elif self.current_state == GAME_RUNNING:
@@ -155,6 +167,7 @@ class MyGame(arcade.Window):
 			self.bullet_list.update()
 			self.enemy_bullet_list.update()
 
+			#Enemies randomly shoot bullets
 			for enemy in self.enemy_list:
 				if random.randrange(500) == 0:
 					enemy_bullet = arcade.Sprite("sprites/enemylaser.png")
@@ -163,10 +176,12 @@ class MyGame(arcade.Window):
 					enemy_bullet.change_y = -2
 					self.enemy_bullet_list.append(enemy_bullet)
 
+			#If a enemy bullet hits the player, delete the player and go to game over
 			if arcade.check_for_collision_with_list(self.player_sprite, self.enemy_list):
 				self.player_sprite.kill()
 				self.current_state = GAME_OVER
 
+			#Enemy bullet logic
 			for enemy_bullet in self.enemy_bullet_list:
 				enemy_hit_list = arcade.check_for_collision_with_list(enemy_bullet, self.player_list)
 				if len(enemy_hit_list) > 0:
@@ -177,6 +192,7 @@ class MyGame(arcade.Window):
 				if enemy_bullet.bottom > SCREEN_HEIGHT:
 					enemy_bullet.kill()	
 
+			#Player bullet logic
 			for bullet in self.bullet_list:
 				hit_list = arcade.check_for_collision_with_list(bullet, self.enemy_list)
 				if len(hit_list) > 0:
@@ -187,9 +203,10 @@ class MyGame(arcade.Window):
 				if bullet.bottom > SCREEN_HEIGHT:
 					bullet.kill()
 
+			#Player Movement
 			self.player_sprite.change_x = 0
 			self.player_sprite.change_y = 0
-
+			
 			if self.up_pressed and not self.down_pressed:
 				self.player_sprite.change_y = MOVEMENT_SPEED
 			elif self.down_pressed and not self.up_pressed:
@@ -199,20 +216,23 @@ class MyGame(arcade.Window):
 			elif self.right_pressed and not self.left_pressed:
 				self.player_sprite.change_x = MOVEMENT_SPEED
 
+			#If enemies touch the bottom of the screen go to game over
 			if self.enemy_sprite.center_y < 50:
 				self.current_state = GAME_OVER
-
+			
+			#If there aren't enemies the game stops
 			if len(self.enemy_list) == 0:
 				self.current_state = GAME_WIN
 
 	def on_key_press(self, key, modifiers):
+		#Fps toggle
 		if key == arcade.key.F10:
 			self.fps_counter_state = (not self.fps_counter_state)
-	
+		#Fullscreen toggle
 		if key == arcade.key.F11:
 			self.set_fullscreen(not self.fullscreen)
 			self.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
-
+		#Key map
 		if self.current_state == INSTRUCTION_PAGE:
 			if key == arcade.key.SPACE:
 				self.current_state = GAME_RUNNING
@@ -240,6 +260,7 @@ class MyGame(arcade.Window):
 			sys.exit()	
 
 	def on_key_release(self, key, modifiers):
+		#For better player movement
 		if self.current_state == GAME_RUNNING:
 			if key == arcade.key.UP or key == arcade.key.W:
 				self.up_pressed = False
@@ -251,6 +272,7 @@ class MyGame(arcade.Window):
 				self.right_pressed = False
 
 class Player(arcade.Sprite):
+	#Properties of Player class
 	def update(self):
 		self.center_x += self.change_x
 		self.center_y += self.change_y
@@ -266,6 +288,7 @@ class Player(arcade.Sprite):
 			self.top = SCREEN_HEIGHT - 1
 
 class Enemy(arcade.Sprite):
+	#Properties of Enemy class
 	def update(self):
 		self.center_x += self.change_x
 		self.center_y += self.change_y 
@@ -301,6 +324,7 @@ class FPSCounter:
 			return len(self.frame_times) / sum(self.frame_times)
 
 def main():
+	#Setup and start the game
 	game = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
 	game.setup()
 	arcade.run()
