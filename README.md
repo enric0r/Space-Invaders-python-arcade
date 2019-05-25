@@ -21,5 +21,5 @@ python3 spaceinvaders.py
 
 
 ### Credits
-[PyArcade](http://arcade.academy/)
-[OpenGameArt](https://opengameart.org/)
+* [PyArcade](http://arcade.academy/)
+* [OpenGameArt](https://opengameart.org/)
