@@ -1,5 +1,5 @@
 # Space-Invaders-python-arcade
-Very rough space invaders-like clone, written in python with arcade module
+Very rough(and BUGGY) space invaders-like clone, written in python with arcade module
 
 Alert: is not meant to play with it. It's just a template to help understand the arcade module
 
